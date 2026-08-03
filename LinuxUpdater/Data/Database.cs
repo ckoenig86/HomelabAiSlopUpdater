@@ -36,7 +36,8 @@ namespace LinuxUpdater.Data
                         IpAddress TEXT NOT NULL,
                         Username TEXT NOT NULL,
                         Password TEXT NOT NULL,
-                        Command TEXT NOT NULL
+                        Command TEXT NOT NULL,
+                        OsType TEXT NOT NULL DEFAULT 'Linux'
                     );
 
                     CREATE TABLE IF NOT EXISTS Logs (
@@ -47,6 +48,40 @@ namespace LinuxUpdater.Data
                     );";
                 command.ExecuteNonQuery();
             }
+
+            EnsureOsTypeColumn();
+        }
+
+        private void EnsureOsTypeColumn()
+        {
+            using (var connection = CreateConnection())
+            {
+                var hasOsType = false;
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = "PRAGMA table_info(Machines);";
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            if (string.Equals(reader.GetString(1), "OsType", StringComparison.OrdinalIgnoreCase))
+                            {
+                                hasOsType = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if (!hasOsType)
+                {
+                    using (var command = connection.CreateCommand())
+                    {
+                        command.CommandText = "ALTER TABLE Machines ADD COLUMN OsType TEXT NOT NULL DEFAULT 'Linux';";
+                        command.ExecuteNonQuery();
+                    }
+                }
+            }
         }
 
         public List<Machine> GetMachines()
@@ -56,7 +91,8 @@ namespace LinuxUpdater.Data
             using (var connection = CreateConnection())
             using (var command = connection.CreateCommand())
             {
-                command.CommandText = "SELECT Id, Name, IpAddress, Username, Password, Command FROM Machines ORDER BY Name;";
+                command.CommandText =
+                    "SELECT Id, Name, IpAddress, Username, Password, Command, OsType FROM Machines ORDER BY Name;";
                 using (var reader = command.ExecuteReader())
                 {
                     while (reader.Read())
@@ -68,7 +104,8 @@ namespace LinuxUpdater.Data
                             IpAddress = reader.GetString(2),
                             Username = reader.GetString(3),
                             Password = reader.GetString(4),
-                            Command = reader.GetString(5)
+                            Command = reader.GetString(5),
+                            OsType = ParseOsType(reader.IsDBNull(6) ? "Linux" : reader.GetString(6))
                         });
                     }
                 }
@@ -83,13 +120,14 @@ namespace LinuxUpdater.Data
             using (var command = connection.CreateCommand())
             {
                 command.CommandText = @"
-                    INSERT INTO Machines (Name, IpAddress, Username, Password, Command)
-                    VALUES (@Name, @IpAddress, @Username, @Password, @Command);";
+                    INSERT INTO Machines (Name, IpAddress, Username, Password, Command, OsType)
+                    VALUES (@Name, @IpAddress, @Username, @Password, @Command, @OsType);";
                 command.Parameters.AddWithValue("@Name", machine.Name);
                 command.Parameters.AddWithValue("@IpAddress", machine.IpAddress);
                 command.Parameters.AddWithValue("@Username", machine.Username);
                 command.Parameters.AddWithValue("@Password", machine.Password);
                 command.Parameters.AddWithValue("@Command", machine.Command);
+                command.Parameters.AddWithValue("@OsType", machine.OsType.ToString());
                 command.ExecuteNonQuery();
             }
         }
@@ -105,7 +143,8 @@ namespace LinuxUpdater.Data
                         IpAddress = @IpAddress,
                         Username = @Username,
                         Password = @Password,
-                        Command = @Command
+                        Command = @Command,
+                        OsType = @OsType
                     WHERE Id = @Id;";
                 command.Parameters.AddWithValue("@Id", machine.Id);
                 command.Parameters.AddWithValue("@Name", machine.Name);
@@ -113,6 +152,7 @@ namespace LinuxUpdater.Data
                 command.Parameters.AddWithValue("@Username", machine.Username);
                 command.Parameters.AddWithValue("@Password", machine.Password);
                 command.Parameters.AddWithValue("@Command", machine.Command);
+                command.Parameters.AddWithValue("@OsType", machine.OsType.ToString());
                 command.ExecuteNonQuery();
             }
         }
@@ -177,6 +217,13 @@ namespace LinuxUpdater.Data
                 command.CommandText = "DELETE FROM Logs;";
                 command.ExecuteNonQuery();
             }
+        }
+
+        private static MachineType ParseOsType(string value)
+        {
+            return string.Equals(value, "Windows", StringComparison.OrdinalIgnoreCase)
+                ? MachineType.Windows
+                : MachineType.Linux;
         }
     }
 }

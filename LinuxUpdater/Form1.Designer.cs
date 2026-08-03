@@ -20,7 +20,8 @@
             this.lblMachines = new System.Windows.Forms.Label();
             this.clbMachines = new System.Windows.Forms.CheckedListBox();
             this.panelLeftButtons = new System.Windows.Forms.FlowLayoutPanel();
-            this.btnAdd = new System.Windows.Forms.Button();
+            this.btnAddLinux = new System.Windows.Forms.Button();
+            this.btnAddWindows = new System.Windows.Forms.Button();
             this.btnEdit = new System.Windows.Forms.Button();
             this.btnDelete = new System.Windows.Forms.Button();
             this.btnSelectAll = new System.Windows.Forms.Button();
@@ -69,34 +70,45 @@
             // panelLeftButtons
             //
             this.panelLeftButtons.AutoSize = true;
-            this.panelLeftButtons.Controls.Add(this.btnAdd);
+            this.panelLeftButtons.Controls.Add(this.btnAddLinux);
+            this.panelLeftButtons.Controls.Add(this.btnAddWindows);
             this.panelLeftButtons.Controls.Add(this.btnEdit);
             this.panelLeftButtons.Controls.Add(this.btnDelete);
             this.panelLeftButtons.Controls.Add(this.btnSelectAll);
             this.panelLeftButtons.Controls.Add(this.btnSelectNone);
             this.panelLeftButtons.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panelLeftButtons.Location = new System.Drawing.Point(10, 390);
+            this.panelLeftButtons.Location = new System.Drawing.Point(10, 356);
             this.panelLeftButtons.Name = "panelLeftButtons";
-            this.panelLeftButtons.Size = new System.Drawing.Size(300, 70);
+            this.panelLeftButtons.Size = new System.Drawing.Size(300, 104);
             this.panelLeftButtons.TabIndex = 2;
             //
-            // btnAdd
+            // btnAddLinux
             //
-            this.btnAdd.Location = new System.Drawing.Point(3, 3);
-            this.btnAdd.Name = "btnAdd";
-            this.btnAdd.Size = new System.Drawing.Size(90, 28);
-            this.btnAdd.TabIndex = 0;
-            this.btnAdd.Text = "Add Machine";
-            this.btnAdd.UseVisualStyleBackColor = true;
-            this.btnAdd.Click += new System.EventHandler(this.btnAdd_Click);
+            this.btnAddLinux.Location = new System.Drawing.Point(3, 3);
+            this.btnAddLinux.Name = "btnAddLinux";
+            this.btnAddLinux.Size = new System.Drawing.Size(100, 28);
+            this.btnAddLinux.TabIndex = 0;
+            this.btnAddLinux.Text = "Add Linux";
+            this.btnAddLinux.UseVisualStyleBackColor = true;
+            this.btnAddLinux.Click += new System.EventHandler(this.btnAddLinux_Click);
+            //
+            // btnAddWindows
+            //
+            this.btnAddWindows.Location = new System.Drawing.Point(109, 3);
+            this.btnAddWindows.Name = "btnAddWindows";
+            this.btnAddWindows.Size = new System.Drawing.Size(100, 28);
+            this.btnAddWindows.TabIndex = 1;
+            this.btnAddWindows.Text = "Add Windows";
+            this.btnAddWindows.UseVisualStyleBackColor = true;
+            this.btnAddWindows.Click += new System.EventHandler(this.btnAddWindows_Click);
             //
             // btnEdit
             //
             this.btnEdit.Enabled = false;
-            this.btnEdit.Location = new System.Drawing.Point(99, 3);
+            this.btnEdit.Location = new System.Drawing.Point(215, 3);
             this.btnEdit.Name = "btnEdit";
-            this.btnEdit.Size = new System.Drawing.Size(90, 28);
-            this.btnEdit.TabIndex = 1;
+            this.btnEdit.Size = new System.Drawing.Size(70, 28);
+            this.btnEdit.TabIndex = 2;
             this.btnEdit.Text = "Edit";
             this.btnEdit.UseVisualStyleBackColor = true;
             this.btnEdit.Click += new System.EventHandler(this.btnEdit_Click);
@@ -104,30 +116,30 @@
             // btnDelete
             //
             this.btnDelete.Enabled = false;
-            this.btnDelete.Location = new System.Drawing.Point(195, 3);
+            this.btnDelete.Location = new System.Drawing.Point(3, 37);
             this.btnDelete.Name = "btnDelete";
-            this.btnDelete.Size = new System.Drawing.Size(90, 28);
-            this.btnDelete.TabIndex = 2;
+            this.btnDelete.Size = new System.Drawing.Size(70, 28);
+            this.btnDelete.TabIndex = 3;
             this.btnDelete.Text = "Delete";
             this.btnDelete.UseVisualStyleBackColor = true;
             this.btnDelete.Click += new System.EventHandler(this.btnDelete_Click);
             //
             // btnSelectAll
             //
-            this.btnSelectAll.Location = new System.Drawing.Point(3, 37);
+            this.btnSelectAll.Location = new System.Drawing.Point(79, 37);
             this.btnSelectAll.Name = "btnSelectAll";
             this.btnSelectAll.Size = new System.Drawing.Size(90, 28);
-            this.btnSelectAll.TabIndex = 3;
+            this.btnSelectAll.TabIndex = 4;
             this.btnSelectAll.Text = "Select All";
             this.btnSelectAll.UseVisualStyleBackColor = true;
             this.btnSelectAll.Click += new System.EventHandler(this.btnSelectAll_Click);
             //
             // btnSelectNone
             //
-            this.btnSelectNone.Location = new System.Drawing.Point(99, 37);
+            this.btnSelectNone.Location = new System.Drawing.Point(175, 37);
             this.btnSelectNone.Name = "btnSelectNone";
             this.btnSelectNone.Size = new System.Drawing.Size(90, 28);
-            this.btnSelectNone.TabIndex = 4;
+            this.btnSelectNone.TabIndex = 5;
             this.btnSelectNone.Text = "Select None";
             this.btnSelectNone.UseVisualStyleBackColor = true;
             this.btnSelectNone.Click += new System.EventHandler(this.btnSelectNone_Click);
@@ -240,7 +252,7 @@
             this.MinimumSize = new System.Drawing.Size(800, 500);
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Linux Updater";
+            this.Text = "Homelab Updater";
             this.panelLeftButtons.ResumeLayout(false);
             this.panelRight.ResumeLayout(false);
             this.panelRight.PerformLayout();
@@ -258,7 +270,8 @@
         private System.Windows.Forms.Label lblMachines;
         private System.Windows.Forms.CheckedListBox clbMachines;
         private System.Windows.Forms.FlowLayoutPanel panelLeftButtons;
-        private System.Windows.Forms.Button btnAdd;
+        private System.Windows.Forms.Button btnAddLinux;
+        private System.Windows.Forms.Button btnAddWindows;
         private System.Windows.Forms.Button btnEdit;
         private System.Windows.Forms.Button btnDelete;
         private System.Windows.Forms.Button btnSelectAll;

@@ -11,7 +11,7 @@ namespace LinuxUpdater
     public partial class Form1 : Form
     {
         private readonly Database _database = new Database();
-        private readonly SshRunner _sshRunner = new SshRunner();
+        private readonly MachineRunner _runner = new MachineRunner();
         private bool _isRunning;
 
         public Form1()
@@ -54,7 +54,8 @@ namespace LinuxUpdater
             btnEdit.Enabled = !_isRunning && hasSelection;
             btnDelete.Enabled = !_isRunning && hasSelection;
             btnRun.Enabled = !_isRunning && hasChecked;
-            btnAdd.Enabled = !_isRunning;
+            btnAddLinux.Enabled = !_isRunning;
+            btnAddWindows.Enabled = !_isRunning;
             btnViewLogs.Enabled = !_isRunning;
             btnSelectAll.Enabled = !_isRunning && clbMachines.Items.Count > 0;
             btnSelectNone.Enabled = !_isRunning && clbMachines.Items.Count > 0;
@@ -63,9 +64,9 @@ namespace LinuxUpdater
             progressBar.Style = _isRunning ? ProgressBarStyle.Marquee : ProgressBarStyle.Blocks;
         }
 
-        private void btnAdd_Click(object sender, EventArgs e)
+        private void AddMachine(MachineType osType)
         {
-            using (var form = new AddMachineForm())
+            using (var form = new AddMachineForm(osType))
             {
                 if (form.ShowDialog(this) == DialogResult.OK)
                 {
@@ -73,6 +74,16 @@ namespace LinuxUpdater
                     LoadMachines();
                 }
             }
+        }
+
+        private void btnAddLinux_Click(object sender, EventArgs e)
+        {
+            AddMachine(MachineType.Linux);
+        }
+
+        private void btnAddWindows_Click(object sender, EventArgs e)
+        {
+            AddMachine(MachineType.Windows);
         }
 
         private void btnEdit_Click(object sender, EventArgs e)
@@ -147,8 +158,12 @@ namespace LinuxUpdater
                 return;
             }
 
+            var linuxCount = selectedMachines.Count(m => m.OsType == MachineType.Linux);
+            var windowsCount = selectedMachines.Count(m => m.OsType == MachineType.Windows);
+
             var confirm = MessageBox.Show(
-                $"Run the stored command on {selectedMachines.Count} machine(s) via SSH?",
+                $"Run stored commands on {selectedMachines.Count} machine(s)?\n\n" +
+                $"Linux (SSH): {linuxCount}\nWindows (WinRM): {windowsCount}",
                 "Confirm",
                 MessageBoxButtons.YesNo,
                 MessageBoxIcon.Question);
@@ -165,10 +180,11 @@ namespace LinuxUpdater
 
             foreach (var machine in selectedMachines)
             {
-                AppendStatus($"[{DateTime.Now:HH:mm:ss}] Connecting to {machine.Name} ({machine.IpAddress})...");
+                var protocol = MachineRunner.ProtocolLabel(machine);
+                AppendStatus($"[{DateTime.Now:HH:mm:ss}] Connecting to {machine.Name} ({machine.IpAddress}) via {protocol}...");
                 AppendStatus($"Command: {machine.Command}");
 
-                var output = await _sshRunner.RunCommandAsync(machine);
+                var output = await _runner.RunCommandAsync(machine);
                 _database.AddLog(machine.Name, output);
 
                 AppendStatus(output);
